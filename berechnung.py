@@ -92,7 +92,7 @@ def nitrifikation_berechnen(S_CSB_abb_ZT, S_CSB_abb_A, S_NH4_Z_E):
 
 def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
     delta_C = C_zulauf - C_ablauf
-    if C_zulauf < 0 
+    if C_zulauf < 0:
         reinigungsleistung_berechnen = 0
     else:
         reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
