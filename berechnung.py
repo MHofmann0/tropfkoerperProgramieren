@@ -1,10 +1,14 @@
 import math
 
-#Eingaben
+#Eingaben CSB:
 Bd_CSB_hom_ZT = float(input("Tagesfracht des CSB homogenisiert in [kg/d]:"))
 Q_d = float(input("Trockenwetterabfluss im Jahresmittel in [m³/d]:"))
 Bd_CSB_filt_ZT = float(input("Tagesfracht des CSB filtriert in [kg/d]:"))
 T = float(input("Abwassertemperatur in [°C]:"))
+
+#Eingaben Nitrifikation:
+B_d_NH4_ZT = float(input("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:"))
+
 
 #Annahmen CSB Abbau:
 fs = 0.05 #inerte Fraktion im Zulauf
@@ -81,5 +85,15 @@ def nitrifikation_berechnen(S_CSB_abb_ZT, S_CSB_abb_A, S_NH4_Z_E):
     delta_S_NH4_E = -(A_spez / (q_A * 24)) * j_n_max_10 * (temp_faktor) * (saettigung_faktor) * math.exp(-k * h_v)
 
     S_NH4_A_E = S_NH4_Z_E + delta_S_NH4_E + h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
+    S_NH4_ZT = (B_d_NH4_ZT / Q_d) * 1000
 
 
+    return S_NH4_A_E
+
+def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
+    delta_C = C_zulauf - C_ablauf
+    if C_zulauf < 0 
+        reinigungsleistung_berechnen = 0
+    else:
+        reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
+    
