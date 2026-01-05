@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
 
         middle.addWidget(left_container)
 
-        # =================================================
+        # ==============================================
         # RECHTER BEREICH
         # =================================================
         right_container = QWidget()
