@@ -47,7 +47,7 @@ def CSB_berechnen():
         S_CSB_abb_ZT = S_SCB_abb_AT
     return ergebnis_liste
 
-
+'''
 #Nitrifikation
 
 #Gujer und Boller Gleichung
@@ -81,7 +81,9 @@ def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
     else:
         reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
     
-    
+'''
+
+
 #Annahmen CSB Abbau:
 fs = 0.05 #inerte Fraktion im Zulauf
 fa = 0.30 #inerte Fraktion im partikulären CSB
