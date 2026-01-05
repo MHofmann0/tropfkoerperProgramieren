@@ -23,30 +23,30 @@ from reportlab.lib.units import mm
 # =========================================================
 ASSUMPTIONS = [
     ("inerte Fraktion im Zulauf", 0.05),
-    ("Länge [m]", 0.5),
-    ("Breite [m]", 0.2),
-    ("Höhe [m]", 0.3),
-    ("Temperatur [°C]", 20),
-    ("Druck [bar]", 1.0),
-    ("Wärmeleitfähigkeit [W/mK]", 0.6),
-    ("Elastizitätsmodul [GPa]", 210),
-    ("Poisson-Zahl [-]", 0.3),
-    ("Reibungskoeffizient [-]", 0.25),
-    ("Volumenstrom [m³/s]", 0.01),
-    ("Massenstrom [kg/s]", 5),
-    ("Wirkungsgrad [-]", 0.9),
-    ("Sicherheitsfaktor [-]", 1.5),
+    ("inerte Fraktion im partikulären CSB", 0.3),
+    ("hydraulischer Koeffizient", 0.5),
+    ("Reaktionskonstante", 0.0024),
+    ("höhe Tropfkörper", 5.2),
+    ("spezifische Oberfläche des Tropfkörpers in [m²/m³]", 125),
+    ("Temperaturkoeffizient", 1.03),
+    ("Segmenthöhe in [m]", 0.1),
+    ("Hydraulische Beschickung in [m³/m²*h]", 0.39),
+    ("Reaktionsrate bei 10°C in [g NH4-N/m²*d]", 1.8),
+    ("Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2", 2.0),
+    ("Faktor K", 0.11),
+    ("Temperaturkorrekturfaktor", 1.02),
+    ("Startpunkt Höhe", 0.0),
 ]
 
 # =========================================================
 # EINGABEFELDER: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 INPUT_FIELDS = [
-    ("Zulauf CSB [mg/L]", 500),
-    ("Zulauf NH4-N [mg/L]", 40),
-    ("Temperatur [°C]", 15),
-    ("Q Zulauf [m³/h]", 100),
-    ("SRT [d]", 12),
+    ("Tagesfracht des CSB homogenisiert in [kg/d]:", 500),
+    ("Trockenwetterabfluss im Jahresmittel in [m³/d]:", 40),
+    ("Tagesfracht des CSB filtriert in [kg/d]:", 15),
+    ("Abwassertemperatur in [°C]:", 100),
+    ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:", 12),
 ]
 
 
