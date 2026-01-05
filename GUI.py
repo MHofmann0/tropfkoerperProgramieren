@@ -42,11 +42,11 @@ ASSUMPTIONS = [
 # EINGABEFELDER: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 INPUT_FIELDS = [
-    ("Tagesfracht des CSB homogenisiert in [kg/d]:", 500),
-    ("Trockenwetterabfluss im Jahresmittel in [m³/d]:", 40),
-    ("Tagesfracht des CSB filtriert in [kg/d]:", 15),
-    ("Abwassertemperatur in [°C]:", 100),
-    ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:", 12),
+    ("Tagesfracht des CSB homogenisiert in [kg/d]:", 7800),
+    ("Trockenwetterabfluss im Jahresmittel in [m³/d]:", 20000),
+    ("Tagesfracht des CSB filtriert in [kg/d]:", 4480),
+    ("Abwassertemperatur in [°C]:", 5),
+    ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:", 5,2),
 ]
 
 
