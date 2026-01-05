@@ -10,24 +10,6 @@ T = float(input("Abwassertemperatur in [°C]:"))
 B_d_NH4_ZT = float(input("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:"))
 
 
-#Annahmen CSB Abbau:
-fs = 0.05 #inerte Fraktion im Zulauf
-fa = 0.30 #inerte Fraktion im partikulären CSB
-n = 0.5 #hydraulischer Koeffizient
-k_20 = 0.0024 #Reaktionskonstante
-hoehe_TK = 5.2 #höhe Tropfkörper
-A_spez = 125 #spezifische Oberfläche des Tropfkörpers in [m²/m³]
-O_C_20 = 1.03 #Temperaturkoeffizient
-h_seg = 0.1 #Segmenthöhe in [m]
-q_A = 0.39 #Hydraulische Beschickung in [m³/m²*h]
-h_v= 0.0 #
-
-#Annahmen Nitrifikation:
-j_n_max_10 = 1.8 #Reaktionsrate bei 10°C in [g NH4-N/m²*d]
-N = 2 #Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
-k = 0.11 #Faktor K
-O_N_10 = 1.02 #Temperaturkorrekturfaktor
-
 
 def CSB_berechnen():
     #Zulaufkonzentration aus Zulauffracht
@@ -69,7 +51,8 @@ def CSB_berechnen():
 #Nitrifikation
 
 #Gujer und Boller Gleichung
-# nwendung der Gujer-und-Boller-Gleichung um Übergangsbereich 
+#Anwendung der Gujer-und-Boller-Gleichung im Übergangsbereich 
+
 def tab_G_B(S_CSB_abb_segment):
     if S_CSB_abb_segment >= 100:
         return 0.0
@@ -97,3 +80,20 @@ def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
     else:
         reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
     
+#Annahmen CSB Abbau:
+fs = 0.05 #inerte Fraktion im Zulauf
+fa = 0.30 #inerte Fraktion im partikulären CSB
+n = 0.5 #hydraulischer Koeffizient
+k_20 = 0.0024 #Reaktionskonstante
+hoehe_TK = 5.2 #höhe Tropfkörper
+A_spez = 125 #spezifische Oberfläche des Tropfkörpers in [m²/m³]
+O_C_20 = 1.03 #Temperaturkoeffizient
+h_seg = 0.1 #Segmenthöhe in [m]
+q_A = 0.39 #Hydraulische Beschickung in [m³/m²*h]
+h_v= 0.0 #
+
+#Annahmen Nitrifikation:
+j_n_max_10 = 1.8 #Reaktionsrate bei 10°C in [g NH4-N/m²*d]
+N = 2 #Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
+k = 0.11 #Faktor K
+O_N_10 = 1.02 #Temperaturkorrekturfaktor
