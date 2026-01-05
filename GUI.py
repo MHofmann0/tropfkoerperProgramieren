@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         root = QVBoxLayout(central)
 
         # ---------------- Header ----------------
-        header = QLabel("Überschrift")
+        header = QLabel("Tropfkörperberechnung")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         header.setStyleSheet("font-size:22px; font-weight:bold; padding:10px; border:1px solid #aaa;")
         root.addWidget(header)
