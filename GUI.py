@@ -22,6 +22,7 @@ from reportlab.lib.units import mm
 # ANNAHMEN: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 ASSUMPTIONS = [
+<<<<<<< HEAD
     ("inerte Fraktion im Zulauf", 0.05),
     ("Länge [m]", 0.5),
     ("Breite [m]", 0.2),
@@ -36,6 +37,22 @@ ASSUMPTIONS = [
     ("Massenstrom [kg/s]", 5),
     ("Wirkungsgrad [-]", 0.9),
     ("Sicherheitsfaktor [-]", 1.5),
+=======
+    ("inerte Fraktion im Zulauf",berechnung.fs ),
+    ("inerte Fraktion im partikulären CSB", berechnung.fs),
+    ("hydraulischer Koeffizient", 0.2),
+    ("Reaktionskonstante", 0.3),
+    ("höhe Tropfkörper", 20),
+    ("spezifische Oberfläche des Tropfkörpers in [m²/m³]", 1.0),
+    ("Temperaturkoeffizient", 0.6),
+    ("Segmenthöhe in [m]", 210),
+    ("hydraulische Beschickung in [m³/m²*h]", 0.3),
+    ("Startpunkt Höhe", 0.25),
+    ("Reaktionsrate bei 10°C in [g NH4-N/m²*d], 0.01),
+    ("Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2", 5),
+    ("Faktor K", 0.9),
+    ("Temperaturkorrekturfaktor", 1.5),
+>>>>>>> 7d235add383c671b43cf84257bd8f53cfeece47c
 ]
 
 # =========================================================

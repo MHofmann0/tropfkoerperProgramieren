@@ -91,10 +91,11 @@ A_spez = 125 #spezifische Oberfläche des Tropfkörpers in [m²/m³]
 O_C_20 = 1.03 #Temperaturkoeffizient
 h_seg = 0.1 #Segmenthöhe in [m]
 q_A = 0.39 #Hydraulische Beschickung in [m³/m²*h]
-h_v= 0.0 #
+
 
 #Annahmen Nitrifikation:
 j_n_max_10 = 1.8 #Reaktionsrate bei 10°C in [g NH4-N/m²*d]
 N = 2 #Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
 k = 0.11 #Faktor K
 O_N_10 = 1.02 #Temperaturkorrekturfaktor
+h_v= 0.0 #Startpunkt Höhe
