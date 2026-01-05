@@ -22,7 +22,7 @@ from reportlab.lib.units import mm
 # ANNAHMEN: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 ASSUMPTIONS = [
-    ("Dichte [kg/m³]", 1000),
+    ("inerte Fraktion im Zulauf", berechnung.fs),
     ("Länge [m]", 0.5),
     ("Breite [m]", 0.2),
     ("Höhe [m]", 0.3),
