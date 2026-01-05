@@ -74,5 +74,5 @@ Benötigte Python-Pakete:
 
 ### 1. Repository klonen
 ```bash
-git clone https://github.com/DEIN_USERNAME/tropfkoerperProgramieren.git
+git clone https://github.com/MHofmann0/tropfkoerperProgramieren.git
 cd tropfkoerperProgramieren
