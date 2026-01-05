@@ -22,20 +22,20 @@ from reportlab.lib.units import mm
 # ZENTRALE NAMEN DER ANNAHMEFELDER (HIER ANPASSEN!)
 # =========================================================
 ASSUMPTION_NAMES = [
-    "Dichte [kg/m³]",
-    "Länge [m]",
-    "Breite [m]",
-    "Höhe [m]",
-    "Temperatur [°C]",
-    "Druck [bar]",
-    "Wärmeleitfähigkeit [W/mK]",
-    "Elastizitätsmodul [GPa]",
-    "Poisson-Zahl [-]",
-    "Reibungskoeffizient [-]",
-    "Volumenstrom [m³/s]",
-    "Massenstrom [kg/s]",
-    "Wirkungsgrad [-]",
-    "Sicherheitsfaktor [-]",
+    ("Dichte [kg/m³]", 1000),
+    ("Länge [m]", 1.0),
+    ("Breite [m]", 1.0),
+    ("Höhe [m]", 1.0),
+    ("Temperatur [°C]", 25.0),
+    ("Druck [bar]", 1.0),
+    ("Wärmeleitfähigkeit [W/mK]", 0.5),
+    ("Elastizitätsmodul [GPa]", 100.0),
+    ("Poisson-Zahl [-]", 0.3),
+    ("Reibungskoeffizient [-]", 0.1),
+    ("Volumenstrom [m³/s]", 1.0),
+    ("Massenstrom [kg/s]", 1.0),
+    ("Wirkungsgrad [-]", 1.0),
+    ("Sicherheitsfaktor [-]", 1.0),
 ]
 
 
