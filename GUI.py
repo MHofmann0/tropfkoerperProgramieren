@@ -213,8 +213,29 @@ class MainWindow(QMainWindow):
         except ValueError:
             return None, f"{name} ist keine Zahl"
 
+    def all_inputs_are_numbers(self):
+    # prüft Eingabefelder
+
+        for name, edit in self.input_fields:
+            val, err = self.parse_float(edit.text(), name)
+            if err:
+                return False
+
+        # prüft Annahmenfelder
+        for (name, _), edit in zip(ASSUMPTIONS, self.assumption_fields):
+            val, err = self.parse_float(edit.text(), name)
+            if err:
+                return False
+
+        return True
+
     def update_charts(self):
         self.messages.clear()
+
+        # 🔴 ZUERST prüfen, ob alle Eingaben Zahlen sind
+        if not self.all_inputs_are_numbers():
+            self.log("Falsche Werte, bitte nur Zahlen eingeben")
+            return
 
         y1 = []
         for name, edit in self.input_fields:
