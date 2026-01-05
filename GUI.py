@@ -22,7 +22,7 @@ from reportlab.lib.units import mm
 # ANNAHMEN: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 ASSUMPTIONS = [
-    ("inerte Fraktion im Zulauf", berechnung.fs),
+    ("inerte Fraktion im Zulauf", 0.05),
     ("Länge [m]", 0.5),
     ("Breite [m]", 0.2),
     ("Höhe [m]", 0.3),
@@ -36,6 +36,17 @@ ASSUMPTIONS = [
     ("Massenstrom [kg/s]", 5),
     ("Wirkungsgrad [-]", 0.9),
     ("Sicherheitsfaktor [-]", 1.5),
+]
+
+# =========================================================
+# EINGABEFELDER: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
+# =========================================================
+INPUT_FIELDS = [
+    ("Zulauf CSB [mg/L]", 500),
+    ("Zulauf NH4-N [mg/L]", 40),
+    ("Temperatur [°C]", 15),
+    ("Q Zulauf [m³/h]", 100),
+    ("SRT [d]", 12),
 ]
 
 
@@ -118,14 +129,15 @@ class MainWindow(QMainWindow):
         input_box.setStyleSheet(box_style)
         grid_in = QGridLayout(input_box)
 
-        self.input_fields = []
-        for i in range(5):
-            label = QLabel(f"Feld {i+1}:")
-            edit = QLineEdit()
+        self.input_fields = []  # Liste aus (name, QLineEdit)
+        for i, (name, default) in enumerate(INPUT_FIELDS):
+            label = QLabel(f"{name}:")
+            edit = QLineEdit(str(default))
             edit.setFixedWidth(220)
-            self.input_fields.append(edit)
+            self.input_fields.append((name, edit))
             grid_in.addWidget(label, i, 0)
             grid_in.addWidget(edit, i, 1)
+
 
         left_layout.addWidget(input_box)
 
@@ -165,8 +177,8 @@ class MainWindow(QMainWindow):
         right_container = QWidget()
         right_layout = QVBoxLayout(right_container)
 
-        self.chart_1 = LineChartWidget("Diagramm aus Eingabefeldern")
-        self.chart_2 = LineChartWidget("Diagramm aus Annahmen")
+        self.chart_1 = LineChartWidget("CSB-Abbau")
+        self.chart_2 = LineChartWidget("Nitrifikation")
 
         right_layout.addWidget(self.chart_1, stretch=1)
         right_layout.addWidget(self.chart_2, stretch=1)
@@ -205,8 +217,9 @@ class MainWindow(QMainWindow):
         self.messages.clear()
 
         y1 = []
-        for i, edit in enumerate(self.input_fields, start=1):
-            val, err = self.parse_float(edit.text(), f"Feld {i}")
+        for name, edit in self.input_fields:
+            val, err = self.parse_float(edit.text(), name)
+
             if err:
                 self.log("Fehler: " + err)
             else:
