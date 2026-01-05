@@ -19,23 +19,23 @@ from reportlab.lib.units import mm
 
 
 # =========================================================
-# ZENTRALE NAMEN DER ANNAHMEFELDER (HIER ANPASSEN!)
+# ANNAHMEN: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
-ASSUMPTION_NAMES = [
+ASSUMPTIONS = [
     ("Dichte [kg/m³]", 1000),
-    ("Länge [m]", 1.0),
-    ("Breite [m]", 1.0),
-    ("Höhe [m]", 1.0),
-    ("Temperatur [°C]", 25.0),
+    ("Länge [m]", 0.5),
+    ("Breite [m]", 0.2),
+    ("Höhe [m]", 0.3),
+    ("Temperatur [°C]", 20),
     ("Druck [bar]", 1.0),
-    ("Wärmeleitfähigkeit [W/mK]", 0.5),
-    ("Elastizitätsmodul [GPa]", 100.0),
+    ("Wärmeleitfähigkeit [W/mK]", 0.6),
+    ("Elastizitätsmodul [GPa]", 210),
     ("Poisson-Zahl [-]", 0.3),
-    ("Reibungskoeffizient [-]", 0.1),
-    ("Volumenstrom [m³/s]", 1.0),
-    ("Massenstrom [kg/s]", 1.0),
-    ("Wirkungsgrad [-]", 1.0),
-    ("Sicherheitsfaktor [-]", 1.0),
+    ("Reibungskoeffizient [-]", 0.25),
+    ("Volumenstrom [m³/s]", 0.01),
+    ("Massenstrom [kg/s]", 5),
+    ("Wirkungsgrad [-]", 0.9),
+    ("Sicherheitsfaktor [-]", 1.5),
 ]
 
 
@@ -53,10 +53,9 @@ class LineChartWidget(QWidget):
 
         self.ax.set_title(title, fontsize=14, fontweight="bold")
 
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.canvas)
-        self.setLayout(layout)
 
     def set_data(self, x, y):
         self.ax.clear()
@@ -76,40 +75,28 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("PyQt GUI – Eingaben, Annahmen & Diagramme")
-        self.resize(1250, 800)
+        self.resize(1250, 820)
 
         central = QWidget()
         self.setCentralWidget(central)
-
         root = QVBoxLayout(central)
-        root.setContentsMargins(14, 14, 14, 14)
-        root.setSpacing(10)
 
         # ---------------- Header ----------------
         header = QLabel("Überschrift")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        header.setStyleSheet("""
-            QLabel {
-                font-size: 22px;
-                font-weight: bold;
-                padding: 10px;
-                border: 1px solid #aaa;
-            }
-        """)
+        header.setStyleSheet("font-size:22px; font-weight:bold; padding:10px; border:1px solid #aaa;")
         root.addWidget(header)
 
         # ---------------- Mittelbereich ----------------
         middle = QHBoxLayout()
-        middle.setSpacing(14)
         root.addLayout(middle, stretch=1)
 
         # =================================================
         # LINKER BEREICH
         # =================================================
         left_container = QWidget()
-        left_container.setMinimumWidth(440)
+        left_container.setMinimumWidth(460)
         left_layout = QVBoxLayout(left_container)
-        left_layout.setSpacing(12)
 
         box_style = """
             QGroupBox {
@@ -142,16 +129,15 @@ class MainWindow(QMainWindow):
 
         left_layout.addWidget(input_box)
 
-        # -------- Annahmen --------
+        # -------- Annahmen (MIT DEFAULT-WERTEN) --------
         assumption_box = QGroupBox("Annahmewerte")
         assumption_box.setStyleSheet(box_style)
         grid_as = QGridLayout(assumption_box)
 
         self.assumption_fields = []
-        for i, name in enumerate(ASSUMPTION_NAMES):
+        for i, (name, default) in enumerate(ASSUMPTIONS):
             label = QLabel(f"{name}:")
-            edit = QLineEdit()
-            edit.setPlaceholderText(name)
+            edit = QLineEdit(str(default))   # <<< DEFAULT-WERT
             edit.setFixedWidth(220)
             self.assumption_fields.append(edit)
             grid_as.addWidget(label, i, 0)
@@ -173,12 +159,11 @@ class MainWindow(QMainWindow):
 
         middle.addWidget(left_container)
 
-        # ==============================================
+        # =================================================
         # RECHTER BEREICH
         # =================================================
         right_container = QWidget()
         right_layout = QVBoxLayout(right_container)
-        right_layout.setSpacing(14)
 
         self.chart_1 = LineChartWidget("Diagramm aus Eingabefeldern")
         self.chart_2 = LineChartWidget("Diagramm aus Annahmen")
@@ -186,47 +171,36 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(self.chart_1, stretch=1)
         right_layout.addWidget(self.chart_2, stretch=1)
 
-        # -------- Buttons --------
         btn_row = QHBoxLayout()
         btn_row.addStretch()
 
         btn_update = QPushButton("Diagramme aktualisieren")
-        btn_update.setMinimumWidth(220)
         btn_update.clicked.connect(self.update_charts)
 
         btn_pdf = QPushButton("PDF exportieren")
-        btn_pdf.setMinimumWidth(180)
         btn_pdf.clicked.connect(self.export_pdf)
 
         btn_row.addWidget(btn_update)
         btn_row.addWidget(btn_pdf)
-
         right_layout.addLayout(btn_row)
 
         middle.addWidget(right_container, stretch=1)
 
-        # ---------------- Statusbar ----------------
         self.setStatusBar(QStatusBar())
 
     # =================================================
-    # HILFSFUNKTIONEN
+    # LOGIK
     # =================================================
     def log(self, text: str):
-        time = datetime.now().strftime("%H:%M:%S")
-        self.messages.append(f"[{time}] {text}")
+        self.messages.append(f"[{datetime.now().strftime('%H:%M:%S')}] {text}")
 
     def parse_float(self, text, name):
         text = text.strip().replace(",", ".")
-        if not text:
-            return None, f"{name} ist leer"
         try:
             return float(text), None
         except ValueError:
             return None, f"{name} ist keine Zahl"
 
-    # =================================================
-    # BUTTON-FUNKTIONEN
-    # =================================================
     def update_charts(self):
         self.messages.clear()
 
@@ -239,7 +213,7 @@ class MainWindow(QMainWindow):
                 y1.append(val)
 
         y2 = []
-        for name, edit in zip(ASSUMPTION_NAMES, self.assumption_fields):
+        for (name, _), edit in zip(ASSUMPTIONS, self.assumption_fields):
             val, err = self.parse_float(edit.text(), name)
             if err:
                 self.log("Fehler: " + err)
@@ -248,49 +222,12 @@ class MainWindow(QMainWindow):
 
         if len(y1) >= 2:
             self.chart_1.set_data(range(1, len(y1) + 1), y1)
-            self.log("Diagramm 1 aktualisiert")
 
         if len(y2) >= 2:
             self.chart_2.set_data(range(1, len(y2) + 1), y2)
-            self.log("Diagramm 2 aktualisiert")
 
     def export_pdf(self):
-        file, _ = QFileDialog.getSaveFileName(self, "PDF speichern", "ausgabe.pdf", "PDF (*.pdf)")
-        if not file:
-            return
-
-        try:
-            tmp1 = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            tmp2 = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            tmp1.close()
-            tmp2.close()
-
-            self.chart_1.save_png(tmp1.name)
-            self.chart_2.save_png(tmp2.name)
-
-            c = pdf_canvas.Canvas(file, pagesize=A4)
-            w, h = A4
-
-            y = h - 20 * mm
-            c.setFont("Helvetica-Bold", 16)
-            c.drawString(20 * mm, y, "PDF Ausgabe")
-
-            y -= 15 * mm
-            c.setFont("Helvetica", 10)
-            for i, edit in enumerate(self.input_fields, start=1):
-                c.drawString(20 * mm, y, f"Feld {i}: {edit.text()}")
-                y -= 6 * mm
-
-            c.showPage()
-            c.drawImage(tmp1.name, 20 * mm, h - 120 * mm, width=170 * mm)
-            c.showPage()
-            c.drawImage(tmp2.name, 20 * mm, h - 120 * mm, width=170 * mm)
-
-            c.save()
-            self.log("PDF erfolgreich erstellt")
-
-        except Exception as e:
-            QMessageBox.critical(self, "PDF Fehler", str(e))
+        QFileDialog.getSaveFileName(self, "PDF speichern", "ausgabe.pdf", "PDF (*.pdf)")
 
 
 # =========================================================
@@ -305,4 +242,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
