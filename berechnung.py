@@ -47,7 +47,7 @@ def CSB_berechnen():
         S_CSB_abb_ZT = S_SCB_abb_AT
     return ergebnis_liste
 
-'''
+
 #Nitrifikation
 
 #Gujer und Boller Gleichung
@@ -62,14 +62,14 @@ def tab_G_B(S_CSB_abb_segment):
         return ((100 - S_CSB_abb_segment) / 80) ** 3
 
 def nitrifikation_berechnen(S_CSB_abb_ZT, S_CSB_abb_A, S_NH4_Z_E):
-    temp_faktor = O_N_10 ** (T - 10)
-    saettigung_faktor = S_NH4_Z_E / N + S_NH4_Z_E
+    temperatur_faktor = O_N_10 ** (T - 10)
+    saettigung_faktor = S_NH4_Z / N + S_NH4_Z
 
-    delta_S_NH4_E = -(A_spez / (q_A * 24)) * j_n_max_10 * (temp_faktor) * (saettigung_faktor) * math.exp(-k * h_v)
+    delta_S_NH4_E = -(A_spez / (q_A * 24)) * j_n_max_10 * (temperatur_faktor) * (saettigung_faktor) * math.exp(-k * h_v)
 
     S_NH4_A_E = S_NH4_Z_E + delta_S_NH4_E + h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
     
-    S_NH4_ZT = (B_d_NH4_ZT / Q_d) * 1000
+    S_NH4_Z = (B_d_NH4_ZT / Q_d) * 1000
 
 
     return S_NH4_A_E
@@ -81,7 +81,7 @@ def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
     else:
         reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
     
-'''
+
 
 
 #Annahmen CSB Abbau:
