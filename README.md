@@ -1,78 +1,67 @@
-# tropfkoerperProgrammieren 
-# Tropfkörper – CSB-Abbau & Nitrifikation (Projektarbeit)
+Tropfkörperberechnung – Python GUI
+Kurzbeschreibung
 
-Dieses Projekt ist eine **Python/PyQt6-Anwendung** zu der Bemessung von Tropfkörperanlagen 
-und beinhaltet die Berechnungen und grafischen Darstellungen des   
-**CSB-Abbaus** und der **Nitrifikation** in einem Tropfkörper.
+Dieses Projekt ist eine Python-Anwendung mit grafischer Benutzeroberfläche (GUI) zur Berechnung des CSB-Abbaus und der Nitrifikation in einem Tropfkörper.
+Die Berechnungen erfolgen auf Basis ingenieurtechnischer Ansätze, die Ergebnisse werden grafisch dargestellt.
 
-Die Anwendung bietet:
-- eine grafische Benutzeroberfläche (GUI),
-- frei editierbare Eingabeparameter,
-- Annahmewerte mit Default-Werten,
-- zwei Liniendiagramme (CSB-Abbau & Nitrifikation),
-- optionale PDF-Ausgabe.
+Die Anwendung wurde im Rahmen eines Übungsprojekts im Modul Programmieren erstellt.
 
----
+Voraussetzungen
 
-## 📌 Funktionsübersicht
+    Python 3.11 oder höher
+    Windows (aufgrund der Aktivierung der virtuellen Umgebung)
+    Empfohlen: Visual Studio Code
 
-### Eingabefelder (GUI)
-Die Eingabefelder werden im Code zentral definiert (`INPUT_FIELDS`) und im GUI vom Nutzer ausgefüllt:
+Installation
+1. Virtuelle Umgebung erstellen
+python -m venv venv
 
-- Tagesfracht des CSB (homogenisiert) [kg/d]
-- Trockenwetterabfluss [m³/d]
-- Tagesfracht des CSB (filtriert) [kg/d]
-- Abwassertemperatur [°C]
-- NH₄-N-Zulauffracht [kg/d]
+2. Virtuelle Umgebung aktivieren
+.\venv\Scripts\activate
 
-👉 Diese Werte werden **erst zur Laufzeit** eingegeben und anschließend im Backend für Berechnungen verwendet.
+3. Abhängigkeiten installieren
+pip install -r requirements.txt
 
----
+Start der Anwendung
+python GUI.py
 
-### Annahmewerte
-Die Annahmewerte sind im Code vordefiniert (`ASSUMPTIONS`) und können bei Bedarf im GUI angepasst werden:
 
-- inerte CSB-Fraktionen
-- hydraulische Parameter
-- Tropfkörpergeometrie
-- Temperatur- und Reaktionskoeffizienten
-- Nitrifikationsparameter
+Nach dem Start öffnet sich die grafische Benutzeroberfläche zur Eingabe der Parameter und zur Anzeige der Diagramme.
 
----
+Projektstruktur
+├── GUI.py              # Startpunkt der GUI
+├── berechnung.py       # Berechnungsfunktionen (CSB & Nitrifikation)
+├── requirements.txt    # Benötigte Python-Bibliotheken
+├── README.md           # Projektdokumentation
+└── venv/               # Virtuelle Umgebung (lokal)
 
-### Diagramme
-- **Diagramm 1:** CSB-Abbau
-- **Diagramm 2:** Nitrifikation
+Verwendete Bibliotheken / Module
 
-Die Diagramme werden durch Klick auf **„Diagramme aktualisieren“** neu berechnet und geplottet.
+    PyQt6
+    matplotlib
+    reportlab
+    math (Standardbibliothek)
+    sys, datetime (Standardbibliothek)
+    Kritische Reflexion zum Einsatz von KI
 
----
+Der Einsatz von KI war insbesondere hilfreich bei:
+    der Strukturierung des Codes,
+    der Erstellung der GUI mit PyQt,
+    der Umsetzung mathematischer Formeln in Python.
 
-## 🧮 Berechnungslogik (Backend)
+Korrekturen waren notwendig bei:
 
-Die mathematischen Grundlagen basieren auf:
-- modifizierter **Velz-Gleichung** für den CSB-Abbau
-- **Gujer-und-Boller-Gleichung** für die Nitrifikation
-- segmentierter Höhenberechnung über den Tropfkörper
+    logischen Fehlern in Berechnungsschritten,
+    auswerten der vorhandenen Unterlagen
+    Einheitenumrechnungen,
+    der Anpassuverknüpfung der GUI-Logik an die berechnungen.
 
-Die Berechnungen sind als Python-Funktionen umgesetzt und werden über die GUI-Eingaben gesteuert.
+Manuelle Verbesserungen:
 
----
+    Optimierung der Benutzerführung,
+    Plausibilitätsprüfungen der Eingaben,
+    Kommentierung und Strukturierung des Codes.
 
-## 🖥️ Voraussetzungen
+Kritische Reflexion der Ergebnisse
 
-- **Python 3.10 oder neuer**
-
-Benötigte Python-Pakete:
-- PyQt6
-- matplotlib
-- reportlab
-
----
-
-## ⚙️ Installation
-
-### 1. Repository klonen
-```bash
-git clone https://github.com/MHofmann0/tropfkoerperProgramieren.git
-cd tropfkoerperProgramieren
+    Aufgrund der oberflächlichen und kurzen Einarbeitung in das Thema der Bemessung von Tropfkörpern zur biologischen Abwasserreinigung sind die berechneten Ergebnisse ohne Gewähr zu verwenden und es wird keine Garantie für deren Richtigkeit übernommen.

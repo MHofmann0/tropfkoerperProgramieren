@@ -27,9 +27,9 @@ def CSB_berechnen(
     if Bd_CSB_filt_ZT == 0:
         S_CSB_ZT =  C_CSB_ZT
     else:
-        S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+        S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) 
     
-    S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+    S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2)
     
     
     X_CSB_ZT = C_CSB_ZT - S_CSB_ZT #partikulär
