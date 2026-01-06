@@ -103,7 +103,7 @@ class LineChartWidget(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PyQt GUI – Eingaben, Annahmen & Diagramme")
+        self.setWindowTitle("Kläranlagenrechner Tropfkörper")
         self.resize(1250, 820)
 
         # Speichert die letzten berechneten Ergebnisse für PDF-Ausgabe
@@ -352,8 +352,15 @@ class MainWindow(QMainWindow):
         c.showPage()
 
     def export_pdf(self):
+        # ✅ Standard-Dateiname: "Tropfkörperberechnung - Datum.pdf"
+        datum = datetime.now().strftime("%Y-%m-%d")
+        default_name = f"Tropfkörperberechnung - {datum}.pdf"
+
         filename, _ = QFileDialog.getSaveFileName(
-            self, "PDF speichern", "ausgabe.pdf", "PDF (*.pdf)"
+            self,
+            "PDF speichern",
+            default_name,
+            "PDF (*.pdf)"
         )
         if not filename:
             return
