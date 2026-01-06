@@ -65,23 +65,26 @@ def nitrifikation_berechnen(S_CSB_abb_ZT, S_CSB_abb_A, S_NH4_Z_E):
     temperatur_faktor = O_N_10 ** (T - 10)
     saettigung_faktor = S_NH4_Z / N + S_NH4_Z
 
-    delta_S_NH4_E = -(A_spez / (q_A * 24)) * j_n_max_10 * (temperatur_faktor) * (saettigung_faktor) * math.exp(-k * h_v)
+    #Ammoniumstickstoffs Konzentration im Ablauf des Tröpfchenkörpersegments
+    delta_S_NH4_E = -(A_spez / (q_A * 24.0)) * j_n_max_10 * temperatur_faktor * saettigung_faktor * math.exp(-k * h_v)
+    delta_S *= tab_G_B(S_CSB_abb_ZT)
 
     S_NH4_A_E = S_NH4_Z_E + delta_S_NH4_E + h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
-    
     S_NH4_Z = (B_d_NH4_ZT / Q_d) * 1000
-
-
     return S_NH4_A_E
 
-def reinigungsleistung_berechnen(C_zulauf, C_ablauf):
-    delta_C = C_zulauf - C_ablauf
-    if delta_C < 0:
-        reinigungsleistung_berechnen = 0
-    else:
-        reinigungsgrad_prozent = ((C_zulauf - C_ablauf) / C_zulauf) * 100
-    
 
+
+
+
+def reinigungsleistung_berechnen(S_CSB_ZT, S_CSB_abb_AT):   #(Zulauf, Ablauf) 
+    delta_C = S_CSB_ZT - S_CSB_abb_AT #Absoluter Reinigungsgrad
+    if delta_C < 0:
+        return 0 #oder TEXT das es nicht funktioniert
+    else:
+        reinigungsgrad_prozent = ((S_CSB_ZT - S_CSB_abb_AT) / S_CSB_ZT) * 100 #Reinigungsleistung als prozentuale entfehrnung
+    
+#Muss noch als fenster in die GUI eingebaut werden
 
 
 #Annahmen CSB Abbau:
