@@ -1,5 +1,9 @@
 import math
 
+def runden(wert, dezimalstellen):
+    epsilon = 1e-10 
+    return round(wert + epsilon, dezimalstellen)
+
 def CSB_berechnen(
         Bd_CSB_hom_ZT: float,       # (variable) Tagesfracht des CSB homogenisiert in [kg/d]
         Bd_CSB_filt_ZT: float,      # (variable) Tagesfracht des CSB filtriert in [kg/d]
@@ -16,38 +20,46 @@ def CSB_berechnen(
         q_A: float = 0.39           # Hydraulische Beschickung in [m³/m²*h]
     ):
     #Zulaufkonzentration aus Zulauffracht
-    C_CSB_ZT = Bd_CSB_hom_ZT /Q_d * 1000
-    S_CSB_ZT = Bd_CSB_filt_ZT / Q_d * 1000
-    X_CSB_ZT = C_CSB_ZT - S_CSB_ZT
+    C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
 
     #Fraktionierung
-    S_CSB_inert_ZT = fs * C_CSB_ZT
-    X_CSB_inert_ZT = fa * X_CSB_ZT
-
+    
+    if Bd_CSB_filt_ZT == 0: 
+        S_CSB_ZT = p_S * C_CSB_ZT
+    else:
+        S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+    
+    S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+    
+    
+    X_CSB_ZT = C_CSB_ZT - S_CSB_ZT #partikulär
+    
+    S_CSB_inert_ZT = runden(fs * C_CSB_ZT,2)
+    X_CSB_inert_ZT = runden(fa * X_CSB_ZT,2)
+    
     #Abbaubarer gelöster CSB im Zulauf
-    X_CSB_abb_ZT = X_CSB_ZT - X_CSB_inert_ZT
-    S_CSB_abb_ZT = S_CSB_ZT - S_CSB_inert_ZT + 0.5 * X_CSB_abb_ZT
-
-    #Anpassung des k-20 Wertes
-    k_20_angepasst = k_20 * (5.2 / hoehe_TK) ** n 
+    S_CSB_abb_ZT = runden(S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT),2)
+    
+    k_20_angepasst = runden(k_20 * (5.2/hoehe_TK)*n, 5)  #Anpassung des k_20-Wertes an die Tropfkörperhöhe
 
 
-    zaehler_S_CSB_hoehe = 0
+    zaehler_s_csb_hoehe = 0
     ergebnis_liste = []
-    ergebnis_liste = [[zaehler_S_CSB_hoehe], [S_CSB_abb_ZT]]
+    ergebnis_liste = [[zaehler_s_csb_hoehe],[S_CSB_abb_ZT]]
+    
+    while(zaehler_s_csb_hoehe < hoehe_TK):
 
+            #CSB-Abbau im Tropfkörper Velz-Gleichung
+            exponent = (A_spez * k_20_angepasst * O_C_20*(T-20) * h_seg) / (q_A * n)
+            S_CSB_abb_A = S_CSB_abb_ZT * math.exp(-exponent)
+            
+            zaehler_s_csb_hoehe = runden(zaehler_s_csb_hoehe+h_seg, 1)
+            
+            S_CSB_abb_A = runden(S_CSB_abb_A, 1)
+            ergebnis_liste[0].extend([zaehler_s_csb_hoehe])
+            ergebnis_liste[1].extend([S_CSB_abb_A])
+            S_CSB_abb_ZT = runden(S_CSB_abb_A, 1)
 
-    while(zaehler_S_CSB_hoehe < hoehe_TK):
-        #modifizierte Velz-Gleichung
-        exponent =  (A_spez * k_20_angepasst * O_C_20 ** (T-20) + h_seg) / (q_A ** n)
-        S_SCB_abb_AT = S_CSB_abb_ZT * math.exp(-exponent)
-        
-        zaehler_S_CSB_hoehe = zaehler_S_CSB_hoehe + h_seg
-        
-        ergebnis_liste[0].append(zaehler_S_CSB_hoehe)
-        ergebnis_liste[1].append(S_SCB_abb_AT)
-
-        S_CSB_abb_ZT = S_SCB_abb_AT
     return ergebnis_liste
 
 #Gujer und Boller Gleichung
