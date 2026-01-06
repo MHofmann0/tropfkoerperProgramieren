@@ -17,7 +17,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas as pdf_canvas
 from reportlab.lib.units import mm
 
-from berechnungen import CSB_berechnen, nitrifikation_berechnen, reinigungsleistung_berechnen
+from berechnung import CSB_berechnen, nitrifikation_berechnen, reinigungsleistung_berechnen
 
 
 # =========================================================
