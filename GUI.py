@@ -6,8 +6,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QLineEdit,
     QVBoxLayout, QHBoxLayout, QGridLayout,
-    QStatusBar, QSizePolicy, QGroupBox,
-    QPushButton, QTextEdit, QFileDialog, QMessageBox
+    QStatusBar, QGroupBox,
+    QPushButton, QTextEdit, QFileDialog
 )
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
@@ -138,7 +138,6 @@ class MainWindow(QMainWindow):
             grid_in.addWidget(label, i, 0)
             grid_in.addWidget(edit, i, 1)
 
-
         left_layout.addWidget(input_box)
 
         # -------- Annahmen (MIT DEFAULT-WERTEN) --------
@@ -149,7 +148,7 @@ class MainWindow(QMainWindow):
         self.assumption_fields = []
         for i, (name, default) in enumerate(ASSUMPTIONS):
             label = QLabel(f"{name}:")
-            edit = QLineEdit(str(default))   # <<< DEFAULT-WERT
+            edit = QLineEdit(str(default))  # DEFAULT-WERT
             edit.setFixedWidth(220)
             self.assumption_fields.append(edit)
             grid_as.addWidget(label, i, 0)
@@ -183,6 +182,26 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(self.chart_1, stretch=1)
         right_layout.addWidget(self.chart_2, stretch=1)
 
+        # =================================================
+        # ✅ NEUES OUTPUT-FELD UNTER DEN 2 GRAPHEN
+        # =================================================
+        output_box = QGroupBox("Ergebnis")
+        output_box.setStyleSheet(box_style)
+        output_layout = QHBoxLayout(output_box)
+
+        label_rl = QLabel("Reinigungsleistung [in %]:")
+        self.output_rl = QLineEdit()
+        self.output_rl.setReadOnly(True)
+        self.output_rl.setFixedWidth(120)
+        self.output_rl.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        output_layout.addWidget(label_rl)
+        output_layout.addWidget(self.output_rl)
+        output_layout.addStretch()
+
+        right_layout.addWidget(output_box)
+
+        # -------- Buttons --------
         btn_row = QHBoxLayout()
         btn_row.addStretch()
 
@@ -214,16 +233,15 @@ class MainWindow(QMainWindow):
             return None, f"{name} ist keine Zahl"
 
     def all_inputs_are_numbers(self):
-    # prüft Eingabefelder
-
+        # prüft Eingabefelder
         for name, edit in self.input_fields:
-            val, err = self.parse_float(edit.text(), name)
+            _, err = self.parse_float(edit.text(), name)
             if err:
                 return False
 
         # prüft Annahmenfelder
         for (name, _), edit in zip(ASSUMPTIONS, self.assumption_fields):
-            val, err = self.parse_float(edit.text(), name)
+            _, err = self.parse_float(edit.text(), name)
             if err:
                 return False
 
@@ -232,15 +250,15 @@ class MainWindow(QMainWindow):
     def update_charts(self):
         self.messages.clear()
 
-        # 🔴 ZUERST prüfen, ob alle Eingaben Zahlen sind
+        # ZUERST prüfen, ob alle Eingaben Zahlen sind
         if not self.all_inputs_are_numbers():
+            self.output_rl.setText("")  # Output leeren
             self.log("Falsche Werte, bitte nur Zahlen eingeben")
             return
 
         y1 = []
         for name, edit in self.input_fields:
             val, err = self.parse_float(edit.text(), name)
-
             if err:
                 self.log("Fehler: " + err)
             else:
@@ -260,7 +278,18 @@ class MainWindow(QMainWindow):
         if len(y2) >= 2:
             self.chart_2.set_data(range(1, len(y2) + 1), y2)
 
+        # =================================================
+        # ✅ Reinigungsleistung berechnen (Beispiel)
+        # - hier als Demo: aus erstem und letztem CSB-Wert
+        # =================================================
+        if len(y1) >= 2 and y1[0] != 0:
+            reinigungsleistung = (1 - y1[-1] / y1[0]) * 100
+            self.output_rl.setText(f"{reinigungsleistung:.1f}")
+        else:
+            self.output_rl.setText("")
+
     def export_pdf(self):
+        # (Dein bisheriger Code war hier noch nicht fertig – ich lasse das Verhalten wie bei dir:
         QFileDialog.getSaveFileName(self, "PDF speichern", "ausgabe.pdf", "PDF (*.pdf)")
 
 
