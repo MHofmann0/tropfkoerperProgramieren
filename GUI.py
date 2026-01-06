@@ -47,7 +47,7 @@ INPUT_FIELDS = [
     ("Tagesfracht des CSB homogenisiert in [kg/d]:", 7800),
     ("Trockenwetterabfluss im Jahresmittel in [m³/d]:", 20000),
     ("Tagesfracht des CSB filtriert in [kg/d]:", 4480),
-    ("Abwassertemperatur in [°C]:", 5),
+    ("Abwassertemperatur in [°C]:", 30),
     ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:", 5.2),
 ]
 
@@ -56,10 +56,13 @@ INPUT_FIELDS = [
 # DIAGRAMM-WIDGET
 # =========================================================
 class LineChartWidget(QWidget):
-    def __init__(self, title: str):
+    def __init__(self, title: str, x_label: str = "", y_label: str = ""):
         super().__init__()
 
         self.title = title
+        self.x_label = x_label
+        self.y_label = y_label
+
         self.figure = Figure(figsize=(5, 3))
         self.canvas = FigureCanvas(self.figure)
         self.ax = self.figure.add_subplot(111)
@@ -70,15 +73,16 @@ class LineChartWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.canvas)
 
-    def set_data(self, x, y):
+    def set_data(self, data):
         self.ax.clear()
         self.ax.set_title(self.title, fontsize=14, fontweight="bold")
-        self.ax.plot(x, y, marker="o")
+        for d in data:
+            self.ax.plot(d[1], d[0], marker="o")
+        self.ax.set_xlabel(self.x_label)
+        self.ax.set_ylabel(self.y_label)
         self.ax.grid(True)
         self.canvas.draw()
 
-    def save_png(self, path: str):
-        self.figure.savefig(path, dpi=150, bbox_inches="tight")
 
 
 # =========================================================
@@ -179,12 +183,14 @@ class MainWindow(QMainWindow):
         right_container = QWidget()
         right_layout = QVBoxLayout(right_container)
 
-        self.chart_1 = LineChartWidget("CSB-Abbau")
-        self.chart_2 = LineChartWidget("Nitrifikation")
+        self.chart_1 = LineChartWidget("CSB-Abbau", x_label="CSB [mg/L]", y_label="Höhe [m]")
+        self.chart_2 = LineChartWidget("Nitrifikation", x_label="NH₄-N [mg/L]", y_label="Höhe [m]")
+
 
         right_layout.addWidget(self.chart_1, stretch=1)
         right_layout.addWidget(self.chart_2, stretch=1)
 
+        # -------- Buttons --------
         btn_row = QHBoxLayout()
         btn_row.addStretch()
 
@@ -239,13 +245,6 @@ class MainWindow(QMainWindow):
             self.log("Falsche Werte, bitte nur Zahlen eingeben")
             return
 
-        ("Tagesfracht des CSB homogenisiert in [kg/d]:", 7800),
-        ("Trockenwetterabfluss im Jahresmittel in [m³/d]:", 20000),
-        ("Tagesfracht des CSB filtriert in [kg/d]:", 4480),
-        ("Abwassertemperatur in [°C]:", 5),
-        ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]:", 5.2),
-
-        
         inputs = []
         for name, edit in self.input_fields:
             val, err = self.parse_float(edit.text(), name)
@@ -255,26 +254,86 @@ class MainWindow(QMainWindow):
             else:
                 inputs.append(val)
 
-        y1, x1 = CSB_berechnen(
-                Bd_CSB_hom_ZT=inputs[0],
-                Q_d=inputs[1],
-                Bd_CSB_filt_ZT=inputs[2],
-                T=inputs[3]
-            )
-
-        y2 = []
+        assumptions = []
         for (name, _), edit in zip(ASSUMPTIONS, self.assumption_fields):
             val, err = self.parse_float(edit.text(), name)
             if err:
                 self.log("Fehler: " + err)
             else:
-                y2.append(val)
+                assumptions.append(val)
 
-        if len(y1) >= 2:
-            self.chart_1.set_data(x1, y1)
+        csb = CSB_berechnen(
+                Bd_CSB_hom_ZT=inputs[0],
+                Q_d=inputs[1],
+                Bd_CSB_filt_ZT=inputs[2],
+                T=inputs[3],
+                fs=assumptions[0],
+                fa=assumptions[1],
+                n=assumptions[2],
+                k_20=assumptions[3],
+                hoehe_TK=assumptions[4],
+                A_spez=assumptions[5],
+                O_C_20=assumptions[6],
+                h_seg=assumptions[7],
+                q_A=assumptions[8]
+            )
+        
+        csb_minus_5 = CSB_berechnen(
+                Bd_CSB_hom_ZT=inputs[0],
+                Q_d=inputs[1],
+                Bd_CSB_filt_ZT=inputs[2],
+                T=inputs[3] - 5,
+                fs=assumptions[0],
+                fa=assumptions[1],
+                n=assumptions[2],
+                k_20=assumptions[3],
+                hoehe_TK=assumptions[4],
+                A_spez=assumptions[5],
+                O_C_20=assumptions[6],
+                h_seg=assumptions[7],
+                q_A=assumptions[8]
+            )
+        
+        csb_plus_5 = CSB_berechnen(
+                Bd_CSB_hom_ZT=inputs[0],
+                Q_d=inputs[1],
+                Bd_CSB_filt_ZT=inputs[2],
+                T=inputs[3] + 5,
+                fs=assumptions[0],
+                fa=assumptions[1],
+                n=assumptions[2],
+                k_20=assumptions[3],
+                hoehe_TK=assumptions[4],
+                A_spez=assumptions[5],
+                O_C_20=assumptions[6],
+                h_seg=assumptions[7],
+                q_A=assumptions[8]
+            )
+    
 
-        if len(y2) >= 2:
-            self.chart_2.set_data(range(1, len(y2) + 1), y2)
+        nitrification = nitrifikation_berechnen(
+                werte_diagramm_csb=csb,
+                B_d_NH4_ZT=inputs[4],
+                Q_d=inputs[1],
+                T=inputs[3],
+                j_n_max_10=assumptions[9],
+                N=assumptions[10],
+                k=assumptions[11],
+                O_N_10=assumptions[12],
+                h_v=assumptions[13],
+                A_spez=assumptions[5],
+                h_seg=assumptions[7],
+                q_A=assumptions[8])
+
+        
+
+        self.chart_1.set_data([csb, csb_minus_5, csb_plus_5])
+        self.chart_2.set_data([[nitrification[0], nitrification[2]]])
+        reinigungsleistung = reinigungsleistung_berechnen(nitrification)
+        self.log("CSB-Reinigung absolut: " + str(reinigungsleistung["CSB-Reinigung"]["absolut"]))
+        self.log("CSB-Reinigung relativ: " + str(reinigungsleistung["CSB-Reinigung"]["relativ"]) + "%")
+        self.log("NH4-N-Reinigung absolut: " + str(reinigungsleistung["NH4-N-Reinigung"]["absolut"]))
+        self.log("NH4-N-Reinigung relativ: " + str(reinigungsleistung["NH4-N-Reinigung"]["relativ"]) + "%")
 
     def export_pdf(self):
         QFileDialog.getSaveFileName(self, "PDF speichern", "ausgabe.pdf", "PDF (*.pdf)")

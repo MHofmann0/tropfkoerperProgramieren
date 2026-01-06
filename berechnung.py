@@ -24,8 +24,8 @@ def CSB_berechnen(
 
     #Fraktionierung
     
-    if Bd_CSB_filt_ZT == 0: 
-        S_CSB_ZT = p_S * C_CSB_ZT
+    if Bd_CSB_filt_ZT == 0:
+        S_CSB_ZT =  C_CSB_ZT
     else:
         S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
     
@@ -63,18 +63,33 @@ def CSB_berechnen(
     return ergebnis_liste
 
 #Gujer und Boller Gleichung
-def tab_G_B(S_CSB_abb_segment):
-    if S_CSB_abb_segment >= 100:
+def calc_w(S_CSB_abb_segment):  # Gujer-und-Boller Gewichtung
+    if S_CSB_abb_segment >= 100.0:
         return 0.0
-    elif S_CSB_abb_segment <= 20:
-        return 1
+    elif S_CSB_abb_segment <= 20.0:
+        return 1.0
     else:
-        return ((100 - S_CSB_abb_segment) / 80) ** 3
+        return ((100.0 - S_CSB_abb_segment) / 80.0) ** 3
 
+def nitrifikation_segment(S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
+    temp_factor = O_N_10 ** (Temp - 10.0) #Temperaturkoeffizient 10°
+    sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z) #Sättigungsfaktor
+    depth_factor = math.exp(-k_faktor * hv) #Abnahme der wirksamen Nitrifikation mit zunehmender Tropfkörperhöhe
+
+    #Konzentration des Ammoniumstickstoffs im Ablauf des Tröpfchenkörpersegments
+    delta_S = -(A_spez / (q_A * 24.0)) * j_N_max_10 * temp_factor * sat_factor * depth_factor
+    delta_S *= calc_w(S_CSB_abb_ZT)
+     
+    S_NH4_A = S_NH4_Z + delta_S * h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
+    
+    if S_NH4_A < 0.0:
+        S_NH4_A = 0.0
+    
+    return S_NH4_A
+    
+#def s_nh4_abb_berechen(werte_diagramm_csb, Bd_NH4_ZT, Temp, A_spez, q_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg, Q_d):
 def nitrifikation_berechnen(
-        S_CSB_abb_ZT: float, 
-        S_CSB_abb_A: float, 
-        S_NH4_Z_E,
+        werte_diagramm_csb, 
         B_d_NH4_ZT: float,          # (variable) NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]
         Q_d: float,                 # (variable) Trockenwetterabfluss im Jahresmittel in [m³/d]
         T: float,                   # (variable) Abwassertemperatur in [°C]
@@ -87,25 +102,57 @@ def nitrifikation_berechnen(
         h_seg: float = 0.1,         # Segmenthöhe in [m]
         q_A: float = 0.39           # Hydraulische Beschickung in [m³/m²*h]
     ):
-    temperatur_faktor = O_N_10 ** (T - 10)
-    saettigung_faktor = S_NH4_Z / N + S_NH4_Z
+    S_NH4_Z = B_d_NH4_ZT/Q_d*1000
+    werte_diagramm_gesamt = [
+        werte_diagramm_csb[0][:],   # Kopie der Höhen
+        werte_diagramm_csb[1][:],   # Kopie der CSB-Werte
+        [S_NH4_Z]                   # Erstelle die NEUE Liste [2] mit dem Startwert
+    ]
+    hv = 0.0
+    for i in range(1, len(werte_diagramm_csb[0])):
+        h_aktuell = werte_diagramm_csb[0][i]
+        S_CSB_abb_ZT = werte_diagramm_csb[1][i-1]
+        S_CSB_abb_A = werte_diagramm_csb[1][i]
+        if S_CSB_abb_ZT>=100.0 and S_CSB_abb_A<100.0:
+            hv = h_seg
+        S_NH4_Z = werte_diagramm_gesamt[2][i-1]
+        werte_diagramm_gesamt[2].extend([nitrifikation_segment(
+            S_NH4_Z, T, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_n_max_10, N, k, h_seg)])
+        if hv > 0.0:
+            hv += runden(h_seg,1)
+    return werte_diagramm_gesamt
 
-    #Ammoniumstickstoffs Konzentration im Ablauf des Tröpfchenkörpersegments
-    delta_S_NH4_E = -(A_spez / (q_A * 24.0)) * j_n_max_10 * temperatur_faktor * saettigung_faktor * math.exp(-k * h_v)
-    delta_S *= tab_G_B(S_CSB_abb_ZT)
+def reinigungsleistung_berechnen(werte_diagramm_gesamt):
+    S_CSB_ZT = werte_diagramm_gesamt[1][0]
+    S_CSB_A_end = werte_diagramm_gesamt[1][-1]
+    S_NH4_Z = werte_diagramm_gesamt[2][0]
+    S_NH4_A_end = werte_diagramm_gesamt[2][-1]
 
-    S_NH4_A_E = S_NH4_Z_E + delta_S_NH4_E + h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
-    S_NH4_Z = (B_d_NH4_ZT / Q_d) * 1000
-    return S_NH4_A_E
+    csb_absolut = runden(S_CSB_ZT - S_CSB_A_end, 1)
+    csb_relativ = runden((csb_absolut / S_CSB_ZT) * 100.0, 1)
+
+    nh4_absolut = runden(S_NH4_Z - S_NH4_A_end, 1)
+    nh4_relativ = runden((nh4_absolut / S_NH4_Z) * 100.0, 1)
+
+    return {
+        "CSB-Reinigung": {
+            "absolut": csb_absolut,
+            "relativ": csb_relativ
+        },
+        "NH4-N-Reinigung": {
+            "absolut": nh4_absolut,
+            "relativ": nh4_relativ
+        }
+    }
 
 
-def reinigungsleistung_berechnen(S_CSB_ZT, S_CSB_abb_AT):   #(Zulauf, Ablauf) 
-    delta_C = S_CSB_ZT - S_CSB_abb_AT #Absoluter Reinigungsgrad
-    if delta_C < 0:
-        return 0 #oder TEXT das es nicht funktioniert
+def tab_G_B(S_CSB_abb_segment):
+    if S_CSB_abb_segment >= 100:
+        return 0.0
+    elif S_CSB_abb_segment <= 20:
+        return 1
     else:
-        reinigungsgrad_prozent = ((S_CSB_ZT - S_CSB_abb_AT) / S_CSB_ZT) * 100 #Reinigungsleistung als prozentuale entfehrnung
-    
-#Muss noch als fenster in die GUI eingebaut werden
+        return ((100 - S_CSB_abb_segment) / 80) ** 3
+
 
 
