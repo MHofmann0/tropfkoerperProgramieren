@@ -23,24 +23,24 @@ def CSB_berechnen(
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
 
     #Fraktionierung
-    
-    if Bd_CSB_filt_ZT == 0:
-        S_CSB_ZT =  C_CSB_ZT
+    """
+    if Bd_CSB_filt_ZT == 0: #Wenn kein Wert für gefilterte Zulauffracht angegeben ist, wird sie mit p_S berechnet
+        S_CSB_ZT = p_S * C_CSB_ZT
     else:
-        S_CSB_ZT = Bd_CSB_filt_ZT/Q_d * 1000 
-    
-    
+        S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+    """
+    S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
     
     
     X_CSB_ZT = C_CSB_ZT - S_CSB_ZT #partikulär
     
-    S_CSB_inert_ZT = fs * C_CSB_ZT
-    X_CSB_inert_ZT = fa * X_CSB_ZT
+    S_CSB_inert_ZT = runden(fs * C_CSB_ZT,2)
+    X_CSB_inert_ZT = runden(fa * X_CSB_ZT,2)
     
     #Abbaubarer gelöster CSB im Zulauf
-    S_CSB_abb_ZT = S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT)
+    S_CSB_abb_ZT = runden(S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT),2)
     
-    k_20_angepasst = k_20 * (5.2/hoehe_TK)*n  #Anpassung des k_20-Wertes an die Tropfkörperhöhe
+    k_20_angepasst = runden(k_20 * (5.2/hoehe_TK)*n, 5)  #Anpassung des k_20-Wertes an die Tropfkörperhöhe
 
 
     zaehler_s_csb_hoehe = 0
@@ -62,28 +62,23 @@ def CSB_berechnen(
 
     return ergebnis_liste
 
+#Gujer und Boller Gleichung
+def calc_w(S_CSB_abb_segment):  # Gujer-und-Boller Gewichtung
+    if S_CSB_abb_segment >= 100.0:
+        return 0.0
+    elif S_CSB_abb_segment <= 20.0:
+        return 1.0
+    else:
+        return ((100.0 - S_CSB_abb_segment) / 80.0) ** 3
 
-def nitrifikation_segment(
-        S_NH4_Z,
-        Temp,
-        A_spez,
-        q_A, hv,
-        S_CSB_abb_ZT,
-        S_CSB_abb_A,
-        O_N_10,
-        j_N_max_10,
-        N_saettigung,
-        k_faktor,
-        h_seg
-    ): 
-
+def nitrifikation_segment(S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
     temp_factor = O_N_10 ** (Temp - 10.0) #Temperaturkoeffizient 10°
     sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z) #Sättigungsfaktor
     depth_factor = math.exp(-k_faktor * hv) #Abnahme der wirksamen Nitrifikation mit zunehmender Tropfkörperhöhe
 
     #Konzentration des Ammoniumstickstoffs im Ablauf des Tröpfchenkörpersegments
     delta_S = -(A_spez / (q_A * 24.0)) * j_N_max_10 * temp_factor * sat_factor * depth_factor
-    delta_S = tab_G_B(S_CSB_abb_ZT)
+    delta_S *= calc_w(S_CSB_abb_ZT)
      
     S_NH4_A = S_NH4_Z + delta_S * h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
     
