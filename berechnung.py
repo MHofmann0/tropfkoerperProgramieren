@@ -6,15 +6,15 @@ def CSB_berechnen(
         Bd_CSB_filt_ZT: float,      # (variable) Filtrierte CSB-Tagesfracht [kg/d]
         Q_d: float,                 # (variable) Mittlerer Trockenwetterabfluss im Jahresverlauf [m³/d]
         T: float,                   # (variable) Abwassertemperatur in [°C]
-        fs: float = 0.05,           # Nicht abbaubare Fraktion im Zulauf
-        fa: float = 0.30,           # Biologisch nicht abbaubarer Anteil des partikulären CSB
-        n: float = 0.5,             # Hydraulikkoeffizient
-        k_20: float = 0.0024,       # Reaktionsrate
+        fs: float = 0.04,           # inerte Fraktion im Zulauf
+        fa: float = 0.03,           # inerte Fraktion im partikulären CSB
+        n: float = 0.5,             # hydraulischer Koeffizient
+        k_20: float = 0.0024,       # Reaktionskonstante
         hoehe_TK: float = 5.2,      # höhe Tropfkörper
-        A_spez: float = 125,        # Spezifische Oberfläche des Tropfkörpermaterials [m²/m³]
-        O_C_20: float = 1.03,       # Temperaturkoeffizient
-        h_seg: float = 0.1,         # Höhe des Segments [m]
-        q_A: float = 0.39           # Hydraulische Flächenbelastung [m³/m²·h]
+        A_spez: float = 120,        # spezifische Oberfläche des Tropfkörpers in [m²/m³]
+        O_C_20: float = 1.02,   # Temperaturkoeffizient
+        h_seg: float = 0.1,         # Segmenthöhe in [m]
+        q_A: float = 0.75           # Hydraulische Beschickung in [m³/m²*h]
     ):
     #Zulaufkonzentration aus Zulauffracht
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
@@ -56,7 +56,8 @@ def CSB_berechnen(
 
 
 
-def nitrifikation_segment(S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
+def nitrifikation_segment(
+    S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
     temp_factor = O_N_10 ** (Temp - 10.0) #Temperaturkoeffizient 10°
     sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z) #Sättigungsfaktor
     depth_factor = math.exp(-k_faktor * hv) #Abnahme der wirksamen Nitrifikation mit zunehmender Tropfkörperhöhe
@@ -79,7 +80,7 @@ def nitrifikation_berechnen(
         Q_d: float,                 # (variable) Trockenwetterabfluss im Jahresmittel in [m³/d]
         T: float,                   # (variable) Abwassertemperatur in [°C]
         j_n_max_10: float = 1.8,    # Reaktionsrate bei 10°C in [g NH4-N/m²*d]
-        N: float = 2,               # Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
+        N: float = 1.75,            # Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
         k: float = 0.11,            # Faktor K
         O_N_10: float = 1.02,       # Temperaturkorrekturfaktor
         h_v: float = 0.0,           # Startpunkt Höhe
@@ -95,7 +96,7 @@ def nitrifikation_berechnen(
     ]
     hv = 0.0
     for i in range(1, len(werte_diagramm_csb[0])):
-        h_aktuell = werte_diagramm_csb[0][i]
+        h_v = werte_diagramm_csb[0][i]
         S_CSB_abb_ZT = werte_diagramm_csb[1][i-1]
         S_CSB_abb_A = werte_diagramm_csb[1][i]
         if S_CSB_abb_ZT>=100.0 and S_CSB_abb_A<100.0:
