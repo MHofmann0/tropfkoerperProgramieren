@@ -1,30 +1,26 @@
 import math
 
-
 def CSB_berechnen(
-        Bd_CSB_hom_ZT: float,       #(variable) Homogenisierte tägliche CSB-Fracht [kg/d]
-        Bd_CSB_filt_ZT: float,      #variable) Filtrierte CSB-Tagesfracht [kg/d]
-        Q_d: float,                 #(variable) Mittlerer Trockenwetterabfluss im Jahresverlauf [m³/d]
-        T: float,                   #(variable) Abwassertemperatur in [°C]
-        fs: float = 0.04,           #Nicht abbaubare Fraktion im Zulauf
-        fa: float = 0.03,           #Biologisch nicht abbaubarer Anteil des partikulären CSB
-        n: float = 0.5,             #hydraulischer Koeffizient
-        k_20: float = 0.0024,       #Reaktionskonstante
-        hoehe_TK: float = 5.2,      #Tropfkörperhöhe in  [m]
-        A_spez: float = 120,        #Volumenbezogene spezifische Oberfläche des Tropfkörpers [m²/m³]
-        O_C_20: float = 1.02,       #Temperaturkoeffizient
-        h_seg: float = 0.1,         #Höhe des Segments in [m]
-        q_A: float = 0.75           #Hydraulische Flächenbelastung [m³/m²·h]
+        Bd_CSB_hom_ZT: float,       
+        Bd_CSB_filt_ZT: float,      
+        Q_d: float,                
+        T: float,                   
+        fs: float = 0.04,           
+        fa: float = 0.03,           
+        n: float = 0.5,             
+        k_20: float = 0.0024,       
+        hoehe_TK: float = 5.2,      
+        A_spez: float = 120,        
+        O_C_20: float = 1.02,       
+        h_seg: float = 0.1,         
+        q_A: float = 0.75           
     ):
     #Zulaufkonzentration aus Zulauffracht
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
 
     #Fraktionierung
-    S_CSB_ZT = Bd_CSB_filt_ZT/Q_d * 1000
-    
-    
+    S_CSB_ZT = Bd_CSB_filt_ZT/Q_d * 1000   
     X_CSB_ZT = C_CSB_ZT - S_CSB_ZT 
-    
     S_CSB_inert_ZT = fs * C_CSB_ZT
     X_CSB_inert_ZT = fa * X_CSB_ZT
     
@@ -32,7 +28,6 @@ def CSB_berechnen(
     S_CSB_abb_ZT = S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT)
     
     k_20_angepasst = k_20 * (5.2/hoehe_TK)*n #Anpassung des k_20-Wertes
-
     zaehler_s_csb_hoehe = 0
     ergebnis_liste = []
     ergebnis_liste = [[zaehler_s_csb_hoehe],[S_CSB_abb_ZT]]
@@ -67,11 +62,13 @@ def nitrifikation_segment(
     k_faktor,
     h_seg
     ): 
-    temp_factor = O_N_10 ** (Temp - 10.0)                                   #Temperaturkoeffizient 10°
-    sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z)                         #Sättigungsfaktor
-    depth_factor = math.exp(-k_faktor * hv)                                 #Abnahme der wirksamen Nitrifikation mit zunehmender Tropfkörperhöhe
+    
+    temp_factor = O_N_10 ** (Temp - 10.0)                                   
+    sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z)                        
+    depth_factor = math.exp(-k_faktor * hv)                                 
 
-    #Konzentration des Ammoniumstickstoffs im Ablauf des Tröpfchenkörpersegments
+    #Ammoniumstickstoff Konzentration im Ablauf des Tröpfchenkörpersegments
+
     delta_S = -(A_spez / (q_A * 24.0)) * j_N_max_10 * temp_factor * sat_factor * depth_factor
     delta_S = tab_G_B(S_CSB_abb_ZT)
      
@@ -93,23 +90,23 @@ def tab_G_B(S_CSB_abb_segment):
 
 def nitrifikation_berechnen(
         werte_diagramm_csb, 
-        B_d_NH4_ZT: float,          #(variable) NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]
-        Q_d: float,                 #(variable) Trockenwetterabfluss im Jahresmittel in [m³/d]
-        T: float,                   #(variable) Abwassertemperatur in [°C]
-        j_n_max_10: float = 1.8,    #Reaktionsrate bei 10°C in [g NH4-N/m²*d]
-        N: float = 1.75,            #Sättigungskonstante in [g NH4-N/m³] #liegt zwischen 1 und 2
-        k: float = 0.11,            #Faktor K
-        O_N_10: float = 1.02,       #Temperaturkorrekturfaktor
-        h_v: float = 0.0,           #Startpunkt Höhe
-        A_spez: float = 120,        #spezifische Oberfläche des Tropfkörpers in [m²/m³]
-        h_seg: float = 0.1,         #Segmenthöhe in [m]
-        q_A: float = 0.39           #Hydraulische Beschickung in [m³/m²*h]
+        B_d_NH4_ZT: float,          
+        Q_d: float,                
+        T: float,                   
+        j_n_max_10: float = 1.8,   
+        N: float = 1.75,            
+        k: float = 0.11,           
+        O_N_10: float = 1.02,       
+        h_v: float = 0.0,           
+        A_spez: float = 120,        
+        h_seg: float = 0.1,         
+        q_A: float = 0.39           
     ):
     S_NH4_Z = B_d_NH4_ZT/Q_d*1000
     werte_diagramm_gesamt = [
-        werte_diagramm_csb[0][:],   #Kopie der Höhen
-        werte_diagramm_csb[1][:],   #Kopie der CSB-Werte
-        [S_NH4_Z]                   #Erstelle die NEUE Liste [2] mit dem Startwert
+        werte_diagramm_csb[0][:],   
+        werte_diagramm_csb[1][:],   
+        [S_NH4_Z]                   
     ]
     hv = 0.0
     for i in range(1, len(werte_diagramm_csb[0])):
@@ -147,3 +144,4 @@ def reinigungsleistung_berechnen(werte_diagramm_gesamt):
             "relativ": nh4_relativ
         }
     }
+

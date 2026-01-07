@@ -47,10 +47,10 @@ ASSUMPTIONS = [
 # EINGABEFELDER: NAME + DEFAULT-WERT (HIER BEARBEITEN!)
 # =========================================================
 INPUT_FIELDS = [
-    ("Tagesfracht des CSB homogenisiert in [kg/d]", 7800),
+    ("Tagesfracht des CSB homogenisiert in [kg/d]", 5432),
     ("Trockenwetterabfluss im Jahresmittel in [m³/d]", 20000),
     ("Tagesfracht des CSB filtriert in [kg/d]", 4480),
-    ("Abwassertemperatur in [°C]", 26),
+    ("Abwassertemperatur in [°C]", 30),
     ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]", 5.2),
 ]
 
@@ -347,7 +347,7 @@ class MainWindow(QMainWindow):
         self.log("NH4-N-Reinigung absolut: " + str(reinigungsleistung["NH4-N-Reinigung"]["absolut"]))
         self.log("NH4-N-Reinigung relativ: " + str(reinigungsleistung["NH4-N-Reinigung"]["relativ"]) + "%")
 
-    # ---------------- PDF Helpers ----------------
+    # ---------------- PDF ----------------
     def _pdf_new_page(self, c: pdf_canvas.Canvas):
         c.showPage()
 
@@ -478,3 +478,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

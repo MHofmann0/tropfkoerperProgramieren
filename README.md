@@ -21,7 +21,7 @@ python -m venv venv
 
 3. Abhängigkeiten installieren
 pip install -r requirements.txt
-
+ 
 Start der Anwendung
 python GUI.py
 
@@ -66,9 +66,9 @@ Der Einsatz von KI war insbesondere hilfreich bei:
 
 Korrekturen waren notwendig bei:
 
-    logischen Fehlern in Berechnungsschritten,
+    logischen Fehlern in Berechnungsschritten
     auswerten der vorhandenen Unterlagen
-    Einheitenumrechnungen,
+    Einheitenumrechnungen
     der Anpassuverknüpfung der GUI-Logik an die berechnungen.
 
 Manuelle Verbesserungen:
@@ -79,4 +79,4 @@ Manuelle Verbesserungen:
 
 Kritische Reflexion der Ergebnisse
 
-    Aufgrund der oberflächlichen und kurzen Einarbeitung in das Thema der Bemessung von Tropfkörpern zur biologischen Abwasserreinigung sind die berechneten Ergebnisse ohne Gewähr zu verwenden und es wird keine Garantie für deren Richtigkeit übernommen.
+Aufgrund der oberflächlichen und kurzen Einarbeitung in das Thema der Bemessung von Tropfkörpern zur biologischen Abwasserreinigung sind die berechneten Ergebnisse ohne Gewähr zu verwenden und es wird keine Garantie für deren Richtigkeit übernommen.
