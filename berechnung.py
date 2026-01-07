@@ -20,11 +20,10 @@ def CSB_berechnen(
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
 
     #Fraktionierung
-
     S_CSB_ZT = Bd_CSB_filt_ZT/Q_d * 1000
     
     
-    X_CSB_ZT = C_CSB_ZT - S_CSB_ZT #partikulär
+    X_CSB_ZT = C_CSB_ZT - S_CSB_ZT 
     
     S_CSB_inert_ZT = fs * C_CSB_ZT
     X_CSB_inert_ZT = fa * X_CSB_ZT
@@ -32,8 +31,7 @@ def CSB_berechnen(
     #Abbaubarer gelöster CSB im Zulauf
     S_CSB_abb_ZT = S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT)
     
-    k_20_angepasst = k_20 * (5.2/hoehe_TK)*n #Anpassung des k_20-Wertes an die Tropfkörperhöhe
-
+    k_20_angepasst = k_20 * (5.2/hoehe_TK)*n #Anpassung des k_20-Wertes
 
     zaehler_s_csb_hoehe = 0
     ergebnis_liste = []
@@ -103,15 +101,15 @@ def nitrifikation_berechnen(
         k: float = 0.11,            #Faktor K
         O_N_10: float = 1.02,       #Temperaturkorrekturfaktor
         h_v: float = 0.0,           #Startpunkt Höhe
-        A_spez: float = 125,        #spezifische Oberfläche des Tropfkörpers in [m²/m³]
+        A_spez: float = 120,        #spezifische Oberfläche des Tropfkörpers in [m²/m³]
         h_seg: float = 0.1,         #Segmenthöhe in [m]
         q_A: float = 0.39           #Hydraulische Beschickung in [m³/m²*h]
     ):
     S_NH4_Z = B_d_NH4_ZT/Q_d*1000
     werte_diagramm_gesamt = [
-        werte_diagramm_csb[0][:],   # Kopie der Höhen
-        werte_diagramm_csb[1][:],   # Kopie der CSB-Werte
-        [S_NH4_Z]                   # Erstelle die NEUE Liste [2] mit dem Startwert
+        werte_diagramm_csb[0][:],   #Kopie der Höhen
+        werte_diagramm_csb[1][:],   #Kopie der CSB-Werte
+        [S_NH4_Z]                   #Erstelle die NEUE Liste [2] mit dem Startwert
     ]
     hv = 0.0
     for i in range(1, len(werte_diagramm_csb[0])):
@@ -149,7 +147,3 @@ def reinigungsleistung_berechnen(werte_diagramm_gesamt):
             "relativ": nh4_relativ
         }
     }
-
-
-
-
