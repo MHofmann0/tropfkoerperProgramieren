@@ -50,7 +50,7 @@ INPUT_FIELDS = [
     ("Tagesfracht des CSB homogenisiert in [kg/d]", 7800),
     ("Trockenwetterabfluss im Jahresmittel in [m³/d]", 20000),
     ("Tagesfracht des CSB filtriert in [kg/d]", 4480),
-    ("Abwassertemperatur in [°C]", 30),
+    ("Abwassertemperatur in [°C]", 19),
     ("NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]", 5.2),
 ]
 

@@ -28,6 +28,21 @@ python GUI.py
 
 Nach dem Start öffnet sich die grafische Benutzeroberfläche zur Eingabe der Parameter und zur Anzeige der Diagramme.
 
+Bedienung der Anwendung
+
+Zunächst müssen die Beispielwerte in der Box „Eingabefelder“ durch die gewünschten Projekt- bzw. Beispielwerte ersetzt werden.
+Zusätzlich können die Annahmewerte bei Bedarf angepasst werden.
+
+Durch Klick auf den Button „Diagramme aktualisieren“ werden:
+    die beiden Diagramme zum CSB-Abbau und zur Nitrifikation berechnet und geplottet,
+    die Ergebnisse grafisch in Abhängigkeit von der Tropfkörperhöhe dargestellt.
+
+Des Weiteren werden im Bereich „Meldungen“:
+    die absolute Reinigungsleistung sowie
+    die relative Reinigungsleistung in Prozent  
+für CSB und NH₄-N ausgegeben.
+
+
 Projektstruktur
 ├── GUI.py              # Startpunkt der GUI
 ├── berechnung.py       # Berechnungsfunktionen (CSB & Nitrifikation)
