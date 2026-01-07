@@ -144,4 +144,3 @@ def reinigungsleistung_berechnen(werte_diagramm_gesamt):
             "relativ": nh4_relativ
         }
     }
-
