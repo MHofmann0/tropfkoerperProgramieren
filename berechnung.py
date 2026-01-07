@@ -57,7 +57,19 @@ def CSB_berechnen(
 
 
 def nitrifikation_segment(
-    S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
+    S_NH4_Z,
+    Temp,
+    A_spez,
+    q_A,
+    hv,
+    S_CSB_abb_ZT,
+    S_CSB_abb_A,
+    O_N_10,
+    j_N_max_10,
+    N_saettigung,
+    k_faktor,
+    h_seg
+    ): 
     temp_factor = O_N_10 ** (Temp - 10.0) #Temperaturkoeffizient 10°
     sat_factor = S_NH4_Z / (N_saettigung + S_NH4_Z) #Sättigungsfaktor
     depth_factor = math.exp(-k_faktor * hv) #Abnahme der wirksamen Nitrifikation mit zunehmender Tropfkörperhöhe
@@ -73,7 +85,15 @@ def nitrifikation_segment(
     
     return S_NH4_A
     
-#def s_nh4_abb_berechen(werte_diagramm_csb, Bd_NH4_ZT, Temp, A_spez, q_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg, Q_d):
+def tab_G_B(S_CSB_abb_segment):
+    if S_CSB_abb_segment >= 100:
+        return 0.0
+    elif S_CSB_abb_segment <= 20:
+        return 1
+    else:
+        return ((100 - S_CSB_abb_segment) / 80) ** 3
+
+
 def nitrifikation_berechnen(
         werte_diagramm_csb, 
         B_d_NH4_ZT: float,          # (variable) NH4-N-Konzentration im Zulauf zum Tropfkörper in [kg/d]
@@ -131,14 +151,6 @@ def reinigungsleistung_berechnen(werte_diagramm_gesamt):
         }
     }
 
-
-def tab_G_B(S_CSB_abb_segment):
-    if S_CSB_abb_segment >= 100:
-        return 0.0
-    elif S_CSB_abb_segment <= 20:
-        return 1
-    else:
-        return ((100 - S_CSB_abb_segment) / 80) ** 3
 
 
 
