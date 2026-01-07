@@ -1,8 +1,5 @@
 import math
 
-def runden(wert, dezimalstellen):
-    epsilon = 1e-10 
-    return round(wert + epsilon, dezimalstellen)
 
 def CSB_berechnen(
         Bd_CSB_hom_ZT: float,       # (variable) Tagesfracht des CSB homogenisiert in [kg/d]
@@ -23,24 +20,19 @@ def CSB_berechnen(
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
 
     #Fraktionierung
-    """
-    if Bd_CSB_filt_ZT == 0: #Wenn kein Wert für gefilterte Zulauffracht angegeben ist, wird sie mit p_S berechnet
-        S_CSB_ZT = p_S * C_CSB_ZT
-    else:
-        S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
-    """
-    S_CSB_ZT = runden(Bd_CSB_filt_ZT/Q_d * 1000,2) #gelöst
+
+    S_CSB_ZT = Bd_CSB_filt_ZT/Q_d * 1000
     
     
     X_CSB_ZT = C_CSB_ZT - S_CSB_ZT #partikulär
     
-    S_CSB_inert_ZT = runden(fs * C_CSB_ZT,2)
-    X_CSB_inert_ZT = runden(fa * X_CSB_ZT,2)
+    S_CSB_inert_ZT = fs * C_CSB_ZT
+    X_CSB_inert_ZT = fa * X_CSB_ZT
     
     #Abbaubarer gelöster CSB im Zulauf
-    S_CSB_abb_ZT = runden(S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT),2)
+    S_CSB_abb_ZT = S_CSB_ZT - S_CSB_inert_ZT + 0.5 * (X_CSB_ZT - X_CSB_inert_ZT)
     
-    k_20_angepasst = runden(k_20 * (5.2/hoehe_TK)*n, 5)  #Anpassung des k_20-Wertes an die Tropfkörperhöhe
+    k_20_angepasst = k_20 * (5.2/hoehe_TK)*n #Anpassung des k_20-Wertes an die Tropfkörperhöhe
 
 
     zaehler_s_csb_hoehe = 0
@@ -53,23 +45,16 @@ def CSB_berechnen(
             exponent = (A_spez * k_20_angepasst * O_C_20*(T-20) * h_seg) / (q_A * n)
             S_CSB_abb_A = S_CSB_abb_ZT * math.exp(-exponent)
             
-            zaehler_s_csb_hoehe = runden(zaehler_s_csb_hoehe+h_seg, 1)
+            zaehler_s_csb_hoehe = zaehler_s_csb_hoehe+h_seg
             
-            S_CSB_abb_A = runden(S_CSB_abb_A, 1)
+            S_CSB_abb_A = S_CSB_abb_A
             ergebnis_liste[0].extend([zaehler_s_csb_hoehe])
             ergebnis_liste[1].extend([S_CSB_abb_A])
-            S_CSB_abb_ZT = runden(S_CSB_abb_A, 1)
+            S_CSB_abb_ZT = S_CSB_abb_A
 
     return ergebnis_liste
 
-#Gujer und Boller Gleichung
-def calc_w(S_CSB_abb_segment):  # Gujer-und-Boller Gewichtung
-    if S_CSB_abb_segment >= 100.0:
-        return 0.0
-    elif S_CSB_abb_segment <= 20.0:
-        return 1.0
-    else:
-        return ((100.0 - S_CSB_abb_segment) / 80.0) ** 3
+
 
 def nitrifikation_segment(S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_N_max_10, N_saettigung, k_faktor, h_seg): 
     temp_factor = O_N_10 ** (Temp - 10.0) #Temperaturkoeffizient 10°
@@ -78,7 +63,7 @@ def nitrifikation_segment(S_NH4_Z, Temp, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_ab
 
     #Konzentration des Ammoniumstickstoffs im Ablauf des Tröpfchenkörpersegments
     delta_S = -(A_spez / (q_A * 24.0)) * j_N_max_10 * temp_factor * sat_factor * depth_factor
-    delta_S *= calc_w(S_CSB_abb_ZT)
+    delta_S = tab_G_B(S_CSB_abb_ZT)
      
     S_NH4_A = S_NH4_Z + delta_S * h_seg - (S_CSB_abb_ZT - S_CSB_abb_A) * 0.01
     
@@ -119,7 +104,7 @@ def nitrifikation_berechnen(
         werte_diagramm_gesamt[2].extend([nitrifikation_segment(
             S_NH4_Z, T, A_spez, q_A, hv, S_CSB_abb_ZT, S_CSB_abb_A, O_N_10, j_n_max_10, N, k, h_seg)])
         if hv > 0.0:
-            hv += runden(h_seg,1)
+            hv += h_seg
     return werte_diagramm_gesamt
 
 def reinigungsleistung_berechnen(werte_diagramm_gesamt):
@@ -128,11 +113,11 @@ def reinigungsleistung_berechnen(werte_diagramm_gesamt):
     S_NH4_Z = werte_diagramm_gesamt[2][0]
     S_NH4_A_end = werte_diagramm_gesamt[2][-1]
 
-    csb_absolut = runden(S_CSB_ZT - S_CSB_A_end, 1)
-    csb_relativ = runden((csb_absolut / S_CSB_ZT) * 100.0, 1)
+    csb_absolut = S_CSB_ZT - S_CSB_A_end
+    csb_relativ = (csb_absolut / S_CSB_ZT) * 100.0
 
-    nh4_absolut = runden(S_NH4_Z - S_NH4_A_end, 1)
-    nh4_relativ = runden((nh4_absolut / S_NH4_Z) * 100.0, 1)
+    nh4_absolut = S_NH4_Z - S_NH4_A_end
+    nh4_relativ = (nh4_absolut / S_NH4_Z) * 100.0
 
     return {
         "CSB-Reinigung": {
