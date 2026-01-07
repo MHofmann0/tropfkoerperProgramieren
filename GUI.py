@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
         input_box = QGroupBox("Eingabefelder")
         input_box.setStyleSheet(box_style)
         grid_in = QGridLayout(input_box)
-
+  
         self.input_fields = []  # Liste aus (name, QLineEdit)
         for i, (name, default) in enumerate(INPUT_FIELDS):
             label = QLabel(f"{name}:")
