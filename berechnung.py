@@ -6,15 +6,16 @@ def CSB_berechnen(
         Bd_CSB_filt_ZT: float,      # (variable) Filtrierte CSB-Tagesfracht [kg/d]
         Q_d: float,                 # (variable) Mittlerer Trockenwetterabfluss im Jahresverlauf [m³/d]
         T: float,                   # (variable) Abwassertemperatur in [°C]
-        fs: float = 0.04,           # inerte Fraktion im Zulauf
-        fa: float = 0.03,           # inerte Fraktion im partikulären CSB
+        fs: float = 0.04,           # Nicht abbaubare Fraktion im Zulauf
+        fa: float = 0.03,           # Biologisch nicht abbaubarer Anteil des partikulären CSB
         n: float = 0.5,             # hydraulischer Koeffizient
         k_20: float = 0.0024,       # Reaktionskonstante
-        hoehe_TK: float = 5.2,      # höhe Tropfkörper
-        A_spez: float = 120,        # spezifische Oberfläche des Tropfkörpers in [m²/m³]
-        O_C_20: float = 1.02,   # Temperaturkoeffizient
-        h_seg: float = 0.1,         # Segmenthöhe in [m]
-        q_A: float = 0.75           # Hydraulische Beschickung in [m³/m²*h]
+        hoehe_TK: float = 5.2,      # Tropfkörperhöhe in 
+        hoehe_TK: float = 5.2,      # Tropfkörperhöhe in  [m]
+        A_spez: float = 120,        # Volumenbezogene spezifische Oberfläche des Tropfkörpers [m²/m³]
+        O_C_20: float = 1.02,       # Temperaturkoeffizient
+        h_seg: float = 0.1,         # Höhe des Segments in [m]
+        q_A: float = 0.75           # Hydraulische Flächenbelastung [m³/m²·h]
     ):
     #Zulaufkonzentration aus Zulauffracht
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
