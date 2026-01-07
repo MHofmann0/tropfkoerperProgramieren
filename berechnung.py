@@ -2,19 +2,19 @@ import math
 
 
 def CSB_berechnen(
-        Bd_CSB_hom_ZT: float,       # (variable) Tagesfracht des CSB homogenisiert in [kg/d]
-        Bd_CSB_filt_ZT: float,      # (variable) Tagesfracht des CSB filtriert in [kg/d]
-        Q_d: float,                 # (variable) Trockenwetterabfluss im Jahresmittel in [m³/d]
+        Bd_CSB_hom_ZT: float,       # (variable) Homogenisierte tägliche CSB-Fracht [kg/d]
+        Bd_CSB_filt_ZT: float,      # (variable) Filtrierte CSB-Tagesfracht [kg/d]
+        Q_d: float,                 # (variable) Mittlerer Trockenwetterabfluss im Jahresverlauf [m³/d]
         T: float,                   # (variable) Abwassertemperatur in [°C]
-        fs: float = 0.05,           # inerte Fraktion im Zulauf
-        fa: float = 0.30,           # inerte Fraktion im partikulären CSB
-        n: float = 0.5,             # hydraulischer Koeffizient
-        k_20: float = 0.0024,       # Reaktionskonstante
+        fs: float = 0.05,           # Nicht abbaubare Fraktion im Zulauf
+        fa: float = 0.30,           # Biologisch nicht abbaubarer Anteil des partikulären CSB
+        n: float = 0.5,             # Hydraulikkoeffizient
+        k_20: float = 0.0024,       # Reaktionsrate
         hoehe_TK: float = 5.2,      # höhe Tropfkörper
-        A_spez: float = 125,        # spezifische Oberfläche des Tropfkörpers in [m²/m³]
+        A_spez: float = 125,        # Spezifische Oberfläche des Tropfkörpermaterials [m²/m³]
         O_C_20: float = 1.03,       # Temperaturkoeffizient
-        h_seg: float = 0.1,         # Segmenthöhe in [m]
-        q_A: float = 0.39           # Hydraulische Beschickung in [m³/m²*h]
+        h_seg: float = 0.1,         # Höhe des Segments [m]
+        q_A: float = 0.39           # Hydraulische Flächenbelastung [m³/m²·h]
     ):
     #Zulaufkonzentration aus Zulauffracht
     C_CSB_ZT = Bd_CSB_hom_ZT / Q_d * 1000
